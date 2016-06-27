@@ -1,0 +1,39 @@
+{
+    "name": "ingresse/facebook-accountkit-php",
+    "description": "Facebook Account Kit PHP SDK",
+    "keywords": ["facebook", "accountkit"],
+    "homepage": "http://github.com/ingresse/facebook-accountkit-php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ingresse",
+            "email": "comunidade@ingresse.com",
+            "homepage": "http://dev.ingresse.com/",
+            "role": "Developer"
+        },
+        {
+            "name": "Fernando Dias",
+            "email": "fernando.dias@ingresse.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit"             : "4.8.*",
+        "phpmd/phpmd"                 : "2.3.*",
+        "squizlabs/php_codesniffer"   : "2.5.*",
+        "sensiolabs/security-checker" : "3.0.*",
+        "object-calisthenics/phpcs-calisthenics-rules": "^1.0",
+        "behat/behat": "^3.1",
+        "behat/web-api-extension": "^1.0@dev",
+        "emuse/behat-html-formatter": "^0.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    }
+}

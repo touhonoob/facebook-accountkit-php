@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./vendor/autoload.php"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         verbose="true"
+         colors="true"
+         convertErrorsToExceptions="false"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="true">
+
+    <testsuite name="Ingresse Facebook Account Kit - Testsuite">
+        <testsuite name="Ingresse-Accountkit">
+            <directory suffix="Test.php">./src/Ingresse/Accountkit/Tests</directory>
+        </testsuite>
+    </testsuite>
+
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/Ingresse/Accountkit</directory>
+            <exclude>
+                <directory suffix=".php">./src/Ingresse/Accountkit/Tests</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

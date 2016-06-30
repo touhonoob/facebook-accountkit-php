@@ -4,6 +4,13 @@ namespace Ingresse\Accountkit;
 
 use Ingresse\Accountkit\Config;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException as GuzzleClientException;
+use GuzzleHttp\Exception\ServerException as GuzzleServerException;
+use Ingresse\Accountkit\Exception\VerifyException;
+use Ingresse\Accountkit\Exception\RequestException;
+use Ingresse\Accountkit\Exception\ResponseFormatException;
+use Ingresse\Accountkit\Exception\ResponseFieldException;
+use Ingresse\Accountkit\Exception\UnexpectedException;
 use Exception;
 
 class Client
@@ -47,8 +54,8 @@ class Client
         $appId           = $this->config->getAppId();
         $appSecret       = $this->config->getAppSecret();
         $appAccessToken  = sprintf('AA|%s|%s', $appId, $appSecret);
-        $response        = $this->guzzle->request(
-            'GET',
+
+        $response = $this->call(
             $this->config->getUrlToken(),
             [
                 'query' => [
@@ -59,20 +66,10 @@ class Client
             ]
         );
 
-        if (200 != $response->getStatusCode()) {
-            throw new Exception("Error on Status Code Request Token", 1);
-        }
-
-        $responseHeader = $response->getHeaderLine('content-type');
-
-        if (false == preg_match('/application\/json/', $responseHeader)) {
-            throw new Exception("Error on content type Request Token", 2);
-        }
-
-        $authResponse = json_decode($response->getBody(), true);
+        $authResponse = $this->convertResponse($response);
 
         if (!isset($authResponse['access_token'])) {
-            throw new Exception("Error on token code Request Token", 3);
+            throw new ResponseFieldException('access_token');
         }
 
         return $authResponse['access_token'];
@@ -91,8 +88,7 @@ class Client
             $this->config->getAppSecret()
         );
 
-        $response = $this->guzzle->request(
-            'GET',
+        $response = $this->call(
             $this->config->getUrlUser(),
             [
                 'query' => [
@@ -102,24 +98,41 @@ class Client
             ]
         );
 
-        if (200 != $response->getStatusCode()) {
-            throw new Exception("Error on Status Code Request User", 1);
+        $userResponse = $this->convertResponse($response);
+
+        if (!isset($userResponse['phone']['number'])) {
+            throw new ResponseFieldException('phone number');
         }
 
+        $this->userPhone = $userResponse['phone'];
+    }
+
+    private function call($url, $params)
+    {
+        try {
+            return $this->guzzle->request('GET', $url, $params);
+        } catch (GuzzleClientException $e) {
+            throw new VerifyException($e);
+        } catch (GuzzleServerException $e) {
+            throw new RequestException($e);
+        } catch (Exception $e) {
+            throw new UnexpectedException($e);
+        }
+    }
+
+    /**
+     * @param  GuzzleHttp\Psr7\Response $response
+     * @return array
+     */
+    private function convertResponse($response)
+    {
         $responseHeader = $response->getHeaderLine('content-type');
 
         if (false == preg_match('/application\/json/', $responseHeader)) {
-            throw new Exception("Error on Content Type Request User", 2);
+            throw new ResponseFormatException;
         }
 
-        $userResponse    = json_decode($response->getBody(), true);
-
-        if (!isset($userResponse['phone']['number'])) {
-            throw new Exception("Error on Phone Request User", 3);
-        }
-
-        $this->userPhone = $userResponse['phone']['number'];
-
+        return json_decode($response->getBody(), true);
     }
 
     /**
@@ -127,7 +140,23 @@ class Client
      */
     public function getPhone()
     {
-        return $this->userPhone;
+        return $this->userPhone['national_number'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getDDI()
+    {
+        return $this->userPhone['country_prefix'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullPhonenumber()
+    {
+        return $this->userPhone['number'];
     }
 
     /**

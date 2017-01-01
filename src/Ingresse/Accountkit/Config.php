@@ -20,6 +20,7 @@ class Config
 
     /**
      * @param array $params
+     * @throws OutOfBoundsException
      */
     public function __construct($params)
     {

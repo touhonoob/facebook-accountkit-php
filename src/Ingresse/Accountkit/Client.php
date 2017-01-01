@@ -2,27 +2,29 @@
 
 namespace Ingresse\Accountkit;
 
-use Ingresse\Accountkit\Config;
+use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
-use Ingresse\Accountkit\Exception\VerifyException;
+use GuzzleHttp\Psr7\Response;
 use Ingresse\Accountkit\Exception\RequestException;
-use Ingresse\Accountkit\Exception\ResponseFormatException;
 use Ingresse\Accountkit\Exception\ResponseFieldException;
+use Ingresse\Accountkit\Exception\ResponseFormatException;
 use Ingresse\Accountkit\Exception\UnexpectedException;
-use Exception;
+use Ingresse\Accountkit\Exception\VerifyException;
 
 class Client
 {
     /**
-     * @var Ingresse\Accountkit\Config
+     * @var Config
      */
     private $config;
+
     /**
-     * @var GuzzleHttp\Client
+     * @var \GuzzleHttp\Client
      */
     private $guzzle;
+
     /**
      * @var string
      */
@@ -37,6 +39,10 @@ class Client
     /**
      * @param  string $requestCode
      * @return boolean
+     * @throws RequestException
+     * @throws ResponseFieldException
+     * @throws VerifyException
+     * @throws UnexpectedException
      */
     public function validate($requestCode)
     {
@@ -47,7 +53,11 @@ class Client
     /**
      * @param  string $requestCode
      * @return string
-     * @throws Exception
+     * @throws RequestException
+     * @throws ResponseFieldException
+     * @throws ResponseFormatException
+     * @throws VerifyException
+     * @throws UnexpectedException
      */
     public function callAccessToken($requestCode)
     {
@@ -78,7 +88,11 @@ class Client
     /**
      * @param  string $authAccessToken
      * @return string
-     * @throws Exception
+     * @throws RequestException
+     * @throws ResponseFieldException
+     * @throws ResponseFormatException
+     * @throws VerifyException
+     * @throws UnexpectedException
      */
     public function callUserData($authAccessToken)
     {
@@ -107,6 +121,14 @@ class Client
         $this->userPhone = $userResponse['phone'];
     }
 
+    /**
+     * @param string $url
+     * @param array $params
+     * @return Response
+     * @throws VerifyException
+     * @throws RequestException
+     * @throws UnexpectedException
+     */
     private function call($url, $params)
     {
         try {
@@ -121,10 +143,11 @@ class Client
     }
 
     /**
-     * @param  GuzzleHttp\Psr7\Response $response
+     * @param  Response $response
      * @return array
+     * @throws ResponseFormatException
      */
-    private function convertResponse($response)
+    private function convertResponse(Response $response)
     {
         $responseHeader = $response->getHeaderLine('content-type');
 
@@ -160,7 +183,7 @@ class Client
     }
 
     /**
-     * @param GuzzleHttp\Client
+     * @param \GuzzleHttp\Client
      */
     public function setGuzzle(GuzzleClient $guzzle)
     {

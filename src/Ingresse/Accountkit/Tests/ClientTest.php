@@ -59,6 +59,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('55', $this->client->getDDI());
         $this->assertEquals('1190908080', $this->client->getPhone());
         $this->assertEquals('+551190908080', $this->client->getFullPhonenumber());
+        $this->assertEquals('abc-123', $this->client->getAccessToken());
     }
 
     /**

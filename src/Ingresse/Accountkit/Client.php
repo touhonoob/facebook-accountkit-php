@@ -35,6 +35,11 @@ class Client
      */
     private $userPhone;
 
+    /**
+     * @var array
+     */
+    private $authResponse;
+
     public function __construct(Config $config)
     {
         $this->config = $config;
@@ -86,6 +91,8 @@ class Client
         if (!isset($authResponse['access_token'])) {
             throw new ResponseFieldException('access_token');
         }
+
+        $this->authResponse = $authResponse;
 
         return $authResponse['access_token'];
     }
@@ -202,5 +209,10 @@ class Client
     public function setGuzzle(GuzzleClient $guzzle)
     {
         $this->guzzle = $guzzle;
+    }
+
+    public function getAccessToken()
+    {
+        return $this->authResponse['access_token'];
     }
 }

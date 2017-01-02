@@ -40,6 +40,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
             200,
             ['content-type' => 'application/json'],
             json_encode([
+                "id" => 123,
                 "phone" => [
                     "number"          => "+551190908080",
                     "country_prefix"  => "55",
@@ -54,6 +55,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $response = $this->client->validate($this->requestCode);
 
         $this->assertTrue($response);
+        $this->assertEquals('1190908080', $this->client->getPhone());
         $this->assertEquals('55', $this->client->getDDI());
         $this->assertEquals('1190908080', $this->client->getPhone());
         $this->assertEquals('+551190908080', $this->client->getFullPhonenumber());

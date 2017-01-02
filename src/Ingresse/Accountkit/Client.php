@@ -26,6 +26,11 @@ class Client
     private $guzzle;
 
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var string
      */
     private $userPhone;
@@ -118,6 +123,7 @@ class Client
             throw new ResponseFieldException('phone number');
         }
 
+        $this->id = $userResponse['id'];
         $this->userPhone = $userResponse['phone'];
     }
 
@@ -156,6 +162,14 @@ class Client
         }
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
